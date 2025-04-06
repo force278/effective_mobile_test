@@ -1,0 +1,250 @@
+definitions:
+  httputil.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+  model.AddUser:
+    properties:
+      name:
+        example: Ivan
+        type: string
+      patronimic:
+        example: Ivanovic
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  model.UpdateUser:
+    properties:
+      name:
+        example: Ivan
+        type: string
+      patronimic:
+        example: Ivanovic
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  model.User:
+    properties:
+      age:
+        example: 22
+        format: int16
+        type: integer
+      gender:
+        example: male
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      name:
+        example: Ivan
+        type: string
+      nation:
+        example: arab
+        type: string
+      patronimic:
+        example: Ivanovic
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Cервис, который получает по API ФИО, из открытых API обогащает ответ
+    наиболее вероятными возрастом, полом и национальностью и сохраняет данные в БД.
+    По запросу выдает инфу о найденных людях.
+  title: Effective Mobile Test API
+  version: "1.0"
+paths:
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список пользователей фильтром по name и пагинацией offset
+        limit
+      parameters:
+      - description: name search by name
+        format: email
+        in: query
+        name: name
+        type: string
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Список пользователей
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Добавляет пользователя в бд по JSON
+      parameters:
+      - description: Add user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.AddUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Добавление пользователя
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пользователя из бд по id
+      parameters:
+      - description: user ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Удаление пользователя
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Возвращает пользователя по ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Возвращает пользователя
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Изменяет информацию о пользователе в соответствии с JSON
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Изменение информации о пользователе
+      tags:
+      - users
+swagger: "2.0"
